@@ -1,0 +1,882 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Detection Hub - Advanced Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #1e40af;
+            --secondary: #0f172a;
+            --secondary-light: #1e293b;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f1f5f9;
+            --light-secondary: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-light: #f1f5f9;
+            --border: #334155;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 50%, #0f172a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--secondary-light);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: var(--white);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(30, 64, 175, 0.3);
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 0.9em;
+        }
+        .user-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .header h1 {
+            font-size: 3em;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header p {
+            font-size: 1.15em;
+            opacity: 0.93;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .header-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.4px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--secondary);
+            flex-wrap: wrap;
+            padding: 8px 10px;
+            overflow-x: auto;
+            gap: 8px;
+        }
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .tab-button:hover { 
+            color: var(--primary-light);
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .tab-button.active { 
+            color: var(--white);
+            background: rgba(59, 130, 246, 0.15);
+            border-bottom-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+        .content { 
+            padding: 40px;
+            background: var(--secondary-light);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--border);
+            padding: 18px 24px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 0.95em;
+            line-height: 1.6;
+            border-left: 4px solid var(--primary);
+        }
+        .info-box strong {
+            color: var(--primary-light);
+            font-weight: 800;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
+        .input-section {
+            background: var(--secondary);
+            padding: 28px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .input-section:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+        }
+        .input-section h2 {
+            color: var(--text-light);
+            margin-bottom: 16px;
+            font-size: 1.2em;
+            font-weight: 800;
+        }
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Segoe UI', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: var(--secondary-light);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: rgba(30, 64, 175, 0.05);
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            border: none;
+            padding: 13px 24px;
+            font-size: 0.85em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            min-width: 140px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
+        }
+        .btn-secondary:hover {
+            box-shadow: 0 8px 20px rgba(100, 116, 139, 0.35);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+        .btn-success:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        }
+        .btn-info {
+            background: linear-gradient(135deg, var(--accent) 0%, #0891b2 100%);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+        }
+        .btn-info:hover {
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.35);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%);
+            color: var(--text-light);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
+            border-color: var(--primary);
+        }
+        .stat-card h3 {
+            font-size: 2.4em;
+            margin-bottom: 8px;
+            font-weight: 900;
+            color: var(--primary-light);
+        }
+        .stat-card p {
+            font-size: 0.8em;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px 40px;
+            color: var(--primary);
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .results {
+            margin-top: 25px;
+            padding: 28px;
+            background: var(--secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .results.show { display: block; animation: slideUp 0.4s ease-out; }
+        .results h2 {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 900;
+        }
+        .result-item {
+            margin-bottom: 16px;
+            padding: 18px;
+            background: var(--secondary-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .result-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+        .result-item h3 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        .result-item p {
+            color: #cbd5e1;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .alert-high { 
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .alert-high h3 { color: #fca5a5; }
+        .alert-medium { 
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .alert-medium h3 { color: #fbbf24; }
+        .alert-low { 
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .alert-low h3 { color: #6ee7b7; }
+        .probability-bar {
+            margin: 14px 0;
+            padding: 6px 0;
+        }
+        .prob-label {
+            display: inline-block;
+            width: 90px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: #cbd5e1;
+        }
+        .prob-bar {
+            display: inline-block;
+            width: calc(100% - 110px);
+            height: 28px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-left: 10px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+        .prob-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 0.8em;
+            font-weight: 800;
+            min-width: 35px;
+            transition: width 0.5s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .sample-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .sample-card {
+            background: var(--secondary);
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .sample-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-5px);
+        }
+        .sample-card h3 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            font-weight: 800;
+        }
+        .sample-card p {
+            color: #cbd5e1;
+            font-size: 0.85em;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .sample-card .btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.8em;
+            min-width: auto;
+        }
+        .history-list {
+            background: var(--secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .history-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+        .history-item:hover { 
+            background: rgba(59, 130, 246, 0.08);
+            transform: translateX(3px);
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-item-text {
+            flex: 1;
+            margin-right: 12px;
+            min-width: 280px;
+        }
+        .history-item-text p {
+            color: #cbd5e1;
+            font-size: 0.85em;
+            margin: 4px 0;
+        }
+        .history-item-text p:first-child {
+            color: var(--text-light);
+            font-weight: 700;
+        }
+        .history-item-prediction {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--primary-light);
+            font-weight: 800;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border: 1px solid var(--primary);
+        }
+        .filter-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .filter-group input,
+        .filter-group select {
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            background: var(--secondary);
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        .filter-group input::placeholder {
+            color: #64748b;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: rgba(30, 64, 175, 0.05);
+        }
+        .model-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .info-card {
+            background: var(--secondary);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .info-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+            transform: translateY(-4px);
+        }
+        .info-card h3 {
+            color: var(--primary-light);
+            margin-bottom: 14px;
+            font-size: 1.05em;
+            font-weight: 800;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .info-card p {
+            color: #cbd5e1;
+            margin: 10px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .status-online { 
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .header { padding: 30px 20px; }
+            .content { padding: 25px 20px; }
+            .tab-button { padding: 10px 14px; font-size: 0.75em; }
+            .statistics { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div>
+                        <h1>Threat Detection Hub</h1>
+                        <p>Advanced AI-Powered Content Analysis & Intelligence Platform</p>
+                    </div>
+                    <div class="user-info">
+                        <span id="userDisplay">Loading...</span>
+                        <span class="user-badge" id="roleDisplay">---</span>
+                        <a href="/logout" class="logout-btn">LOGOUT</a>
+                    </div>
+                </div>
+                <div class="header-badge">Enterprise Grade | Real-Time Analysis</div>
+            </div>
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">DASHBOARD</button>
+            <button class="tab-button" onclick="switchTab(1)">BATCH PROCESSING</button>
+            <button class="tab-button" onclick="switchTab(2)">SAMPLES</button>
+            <button class="tab-button" onclick="switchTab(3)">HISTORY</button>
+            <button class="tab-button" onclick="switchTab(4)">SEARCH</button>
+            <button class="tab-button" onclick="switchTab(5)">ANALYTICS</button>
+            <button class="tab-button" onclick="switchTab(6)">EXPORT</button>
+        </div>
+        <div class="content">
+            <div class="tab-content active">
+                <div class="info-box"><strong>DASHBOARD:</strong> Upload and analyze content instantly. Get AI-powered threat detection with confidence scores and detailed analysis metrics.</div>
+                <div class="main-grid">
+                    <div class="input-section">
+                        <h2>ANALYZE CONTENT</h2>
+                        <textarea id="textInput" placeholder="Paste text content here for real-time threat analysis..."></textarea>
+                        <div class="button-group">
+                            <button class="btn" onclick="analyzeContent()" id="analyzeBtn">ANALYZE NOW</button>
+                            <button class="btn btn-secondary" onclick="clearInput()">CLEAR</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="statistics" id="statisticsContainer">
+                            <div class="stat-card"><h3 id="totalAnalyzed">0</h3><p>Total Analyzed</p></div>
+                            <div class="stat-card"><h3 id="threatsDetected">0</h3><p>Threats Detected</p></div>
+                            <div class="stat-card"><h3 id="alertsSent">0</h3><p>Alerts Triggered</p></div>
+                            <div class="stat-card"><h3 id="accuracy">94.5%</h3><p>System Accuracy</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loading" id="loading"><div class="spinner"></div><p>ANALYZING CONTENT WITH AI MODEL...</p></div>
+                <div class="results" id="results"><h2>ANALYSIS RESULTS</h2><div id="resultContent"></div></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>BATCH PROCESSING:</strong> Process multiple texts simultaneously. Enter one text per line for efficient bulk analysis.</div>
+                <div class="input-section">
+                    <h2>BATCH UPLOAD</h2>
+                    <p style="margin-bottom: 10px; color: #cbd5e1;">Enter multiple texts (one per line):</p>
+                    <textarea id="batchInput" style="width: 100%; min-height: 280px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; font-family: 'Segoe UI', monospace; resize: vertical; transition: all 0.3s ease; background: var(--secondary-light); color: var(--text-light); line-height: 1.6;" placeholder="Line 1 - First text&#10;Line 2 - Second text&#10;Line 3 - Third text"></textarea>
+                    <div class="button-group">
+                        <button class="btn btn-info" onclick="analyzeBatch()" id="batchBtn">PROCESS BATCH</button>
+                        <button class="btn btn-secondary" onclick="clearBatch()">CLEAR</button>
+                    </div>
+                </div>
+                <div class="loading" id="batchLoading"><div class="spinner"></div><p>PROCESSING BATCH ANALYSIS...</p></div>
+                <div class="results" id="batchResults"><h2>BATCH RESULTS</h2><div id="batchResultContent"></div></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>SAMPLE TEXTS:</strong> Quick-start with pre-configured examples. Perfect for learning and testing system capabilities.</div>
+                <div class="sample-grid" id="samplesContainer"><p style="grid-column: 1 / -1; text-align: center; color: #cbd5e1;">Loading sample texts...</p></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>ANALYSIS HISTORY:</strong> View complete analysis records. Track all assessments with timestamps and confidence metrics.</div>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="refreshHistory()">REFRESH RECORDS</button>
+                    <input type="number" id="historyLimit" value="20" min="5" max="100" style="padding: 11px; border: 1px solid var(--border); border-radius: 8px; width: 130px; font-weight: 600; transition: all 0.3s ease; background: var(--secondary); color: var(--text-light);">
+                </div>
+                <div class="history-list" id="historyContainer" style="margin-top: 20px;"><p style="padding: 24px; text-align: center; color: #cbd5e1;">Loading analysis history...</p></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>ADVANCED SEARCH:</strong> Powerful filtering with multiple criteria. Search keywords, confidence ranges, and prediction types.</div>
+                <div class="filter-group">
+                    <input type="text" id="searchTerm" placeholder="Search keywords...">
+                    <input type="number" id="minConfidence" placeholder="Min Confidence" min="0" max="1" step="0.1" value="0">
+                    <input type="number" id="maxConfidence" placeholder="Max Confidence" min="0" max="1" step="0.1" value="1">
+                    <select id="predictionFilter">
+                        <option value="">All Predictions</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Suspicious">Suspicious</option>
+                        <option value="Terrorist-Related">Terrorist-Related</option>
+                    </select>
+                </div>
+                <button class="btn btn-info" onclick="searchHistory()" style="margin-bottom: 20px;">EXECUTE SEARCH</button>
+                <div class="results" id="searchResults"><h2>SEARCH RESULTS</h2><div id="searchResultContent"></div></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>SYSTEM ANALYTICS:</strong> Real-time ML model statistics and performance metrics. Monitor system health and accuracy.</div>
+                <button class="btn btn-info" onclick="loadModelInfo()" style="margin-bottom: 20px;">RELOAD ANALYTICS</button>
+                <div class="model-info-grid" id="modelInfoContainer"><p style="grid-column: 1 / -1; text-align: center; color: #cbd5e1;">Loading system analytics...</p></div>
+            </div>
+            <div class="tab-content">
+                <div class="info-box"><strong>DATA EXPORT:</strong> Download all analysis results for external processing and reporting in multiple formats.</div>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="exportCSV()">DOWNLOAD CSV</button>
+                    <button class="btn" onclick="copyStatsToClipboard()">COPY STATS</button>
+                </div>
+                <div style="margin-top: 24px;" id="exportInfo">
+                    <div class="info-card">
+                        <h3>EXPORT INFORMATION</h3>
+                        <p><strong>Format:</strong> CSV (Comma Separated Values)</p>
+                        <p><strong>Includes:</strong> Timestamp, Content Preview, Prediction Type, Confidence Score, Keyword Score, Alert Status</p>
+                        <p id="exportCount"><strong>Total Records:</strong> Loading...</p>
+                        <p style="margin-top: 12px; color: var(--primary-light); font-weight: 700;">Ready for export and analysis in Excel, Google Sheets, or other tools</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // User Authentication
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/auth/user');
+                if (!response.ok) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const data = await response.json();
+                if (data.success && data.user) {
+                    document.getElementById('userDisplay').textContent = `Welcome, ${data.user.username}!`;
+                    document.getElementById('roleDisplay').textContent = data.user.role;
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                window.location.href = '/login';
+            }
+        }
+        
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            tabs[index].classList.add('active');
+            contents[index].classList.add('active');
+            if (index === 2) loadSamples();
+            if (index === 3) refreshHistory();
+            if (index === 5) loadModelInfo();
+            if (index === 6) updateExportInfo();
+        }
+        function clearInput() { document.getElementById('textInput').value = ''; document.getElementById('results').classList.remove('show'); }
+        async function analyzeContent() {
+            const text = document.getElementById('textInput').value.trim();
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            if (!text) { alert('Please enter text to analyze'); return; }
+            analyzeBtn.disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').classList.remove('show');
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: text, source: 'web_interface'})
+                });
+                if (!response.ok) throw new Error('Analysis failed');
+                const result = await response.json();
+                displayResults(result);
+                updateStatistics();
+            } catch (error) { alert('Error: ' + error.message); }
+            finally { analyzeBtn.disabled = false; document.getElementById('loading').style.display = 'none'; }
+        }
+        function displayResults(result) {
+            const resultDiv = document.getElementById('resultContent');
+            let alertClass = 'alert-low';
+            if (result.prediction_code === 2) alertClass = 'alert-high';
+            else if (result.prediction_code === 1) alertClass = 'alert-medium';
+            const confidencePercent = (result.confidence * 100).toFixed(2);
+            const keywordPercent = (result.keyword_score * 100).toFixed(2);
+            const normalPercent = (result.probabilities.normal * 100).toFixed(2);
+            const suspiciousPercent = (result.probabilities.suspicious * 100).toFixed(2);
+            const terroristPercent = (result.probabilities.terrorist * 100).toFixed(2);
+            resultDiv.innerHTML = '<div class="result-item '+alertClass+'"><h3>Prediction: '+result.prediction+'</h3><p><strong>Confidence Score:</strong> '+confidencePercent+'%</p><p><strong>Keyword Relevance:</strong> '+keywordPercent+'%</p><p><strong>Sentiment:</strong> Polarity: '+result.sentiment.polarity.toFixed(3)+' | Subjectivity: '+result.sentiment.subjectivity.toFixed(3)+'</p><p><strong>Classification Distribution:</strong></p><div class="probability-bar"><span class="prob-label">Normal:</span><div class="prob-bar"><div class="prob-fill" style="width: '+normalPercent+'%">'+normalPercent+'%</div></div></div><div class="probability-bar"><span class="prob-label">Suspicious:</span><div class="prob-bar"><div class="prob-fill" style="width: '+suspiciousPercent+'%; background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)">'+suspiciousPercent+'%</div></div></div><div class="probability-bar"><span class="prob-label">Terrorist:</span><div class="prob-bar"><div class="prob-fill" style="width: '+terroristPercent+'%; background: linear-gradient(90deg, #ef4444 0%, #fca5a5 100%)">'+terroristPercent+'%</div></div></div><div style="margin-top: 14px; font-weight: 800; color: '+(result.alert_triggered ? '#fca5a5' : '#6ee7b7')+';">'+(result.alert_triggered ? 'ALERT TRIGGERED' : 'SAFE CONTENT')+'</div></div>';
+            document.getElementById('results').classList.add('show');
+        }
+        function clearBatch() { document.getElementById('batchInput').value = ''; document.getElementById('batchResults').classList.remove('show'); }
+        async function analyzeBatch() {
+            const input = document.getElementById('batchInput').value.trim();
+            const texts = input.split('\n').filter(line => line.trim());
+            if (texts.length === 0) { alert('Please enter texts to analyze'); return; }
+            const batchBtn = document.getElementById('batchBtn');
+            batchBtn.disabled = true;
+            document.getElementById('batchLoading').style.display = 'block';
+            document.getElementById('batchResults').classList.remove('show');
+            try {
+                const response = await fetch('/api/batch-upload', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({texts: texts}) });
+                if (!response.ok) throw new Error('Batch analysis failed');
+                const result = await response.json();
+                displayBatchResults(result.results);
+                updateStatistics();
+            } catch (error) { alert('Error: ' + error.message); }
+            finally { batchBtn.disabled = false; document.getElementById('batchLoading').style.display = 'none'; }
+        }
+        function displayBatchResults(results) {
+            const resultDiv = document.getElementById('batchResultContent');
+            let html = '';
+            results.forEach((result,index) => {
+                let alertClass = 'alert-low';
+                if (result.prediction === 'Terrorist-Related') alertClass = 'alert-high';
+                else if (result.prediction === 'Suspicious') alertClass = 'alert-medium';
+                html += '<div class="result-item '+alertClass+'"><h3>'+index+1+'. '+result.prediction+'</h3><p><strong>Confidence:</strong> '+((result.confidence*100).toFixed(1))+'%</p><p>'+result.text.substring(0,100)+'...</p></div>';
+            });
+            resultDiv.innerHTML = html;
+            document.getElementById('batchResults').classList.add('show');
+        }
+        async function loadSamples() {
+            try { const r = await fetch('/api/samples'); const d = await r.json(); 
+            let html = ''; d.samples.forEach(s => { html += '<div class="sample-card"><h3>'+s.title+'</h3><p>'+s.text.substring(0,100)+'...</p><button class="btn btn-info" onclick="loadSampleToAnalyzer(\''+s.text.replace(/'/g, "\\'")+'\')" style="width: 100%;">LOAD & ANALYZE</button></div>'; });
+            document.getElementById('samplesContainer').innerHTML = html; } catch(e) { document.getElementById('samplesContainer').innerHTML = '<p style="color: #cbd5e1;">Error loading samples</p>'; }
+        }
+        function loadSampleToAnalyzer(text) { document.getElementById('textInput').value = text; switchTab(0); }
+        async function refreshHistory() {
+            try { const r = await fetch('/api/history?limit='+(document.getElementById('historyLimit').value||20)); const d = await r.json();
+            let html = d.history && d.history.length > 0 ? '' : '<p style="padding: 24px; text-align: center; color: #cbd5e1;">No history yet.</p>';
+            d.history&&d.history.forEach(item => {const p = item.prediction||{}; html += '<div class="history-item"><div class="history-item-text"><p>'+item.text.substring(0,60)+'...</p><p>'+new Date(item.timestamp).toLocaleString()+'</p></div><div class="history-item-prediction">'+p.prediction+' ('+((p.confidence||0)*100).toFixed(1)+'%)</div></div>'; });
+            document.getElementById('historyContainer').innerHTML = html; } catch(e) { document.getElementById('historyContainer').innerHTML = '<p style="color: #cbd5e1;">Error loading</p>'; }
+        }
+        async function searchHistory() {
+            try { const r = await fetch('/api/search', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({search_term: document.getElementById('searchTerm').value, min_confidence: parseFloat(document.getElementById('minConfidence').value)||0, max_confidence: parseFloat(document.getElementById('maxConfidence').value)||1, prediction: document.getElementById('predictionFilter').value || null})});
+            const d = await r.json(); let html = d.count > 0 ? '' : '<p style="text-align: center; color: #cbd5e1;">No results found</p>';
+            d.results&&d.results.forEach(r => { html += '<div class="result-item"><p><strong>'+r.text.substring(0,80)+'...</strong></p><p>Prediction: '+r.prediction.prediction+' ('+((r.prediction.confidence||0)*100).toFixed(1)+'%)</p></div>'; });
+            document.getElementById('searchResultContent').innerHTML = html; document.getElementById('searchResults').classList.add('show'); } catch(e) { alert('Error: '+e.message); }
+        }
+        async function loadModelInfo() {
+            try { const r = await fetch('/api/model-info'); const d = await r.json(); const sc = d.model_loaded ? 'status-online' : 'status-offline'; const st = d.model_loaded ? 'Online' : 'Offline';
+            let html = '<div class="info-card"><h3>ML MODEL</h3><p><span class="status-indicator '+sc+'"></span><strong>'+st+'</strong></p><p><strong>Type:</strong> '+d.model_type+'</p><p><strong>Features:</strong> '+d.total_features+'</p></div><div class="info-card"><h3>PERFORMANCE</h3><p><strong>Accuracy:</strong> '+d.accuracy+'%</p><p><strong>Classes:</strong> '+d.classes.join(', ')+'</p></div><div class="info-card"><h3>STATISTICS</h3><p><strong>Total Analyzed:</strong> '+d.total_samples_analyzed+'</p><p><strong>Threats Detected:</strong> '+d.threats_detected+'</p></div>';
+            document.getElementById('modelInfoContainer').innerHTML = html; } catch(e) { document.getElementById('modelInfoContainer').innerHTML = '<p style="color: #cbd5e1;">Error loading</p>'; }
+        }
+        async function updateExportInfo() { try { const r = await fetch('/api/history?limit=1000'); const d = await r.json(); document.getElementById('exportCount').innerHTML = '<strong>Total Records:</strong> '+(d.count||0)+' ready for export'; } catch(e) {} }
+        async function exportCSV() { try { const r = await fetch('/api/export'); const b = await r.blob(); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = 'threat-analysis-'+new Date().toISOString().split('T')[0]+'.csv'; a.click(); URL.revokeObjectURL(u); alert('Downloaded!'); } catch(e) { alert('Error: '+e.message); } }
+        function copyStatsToClipboard() { const s = 'Total: '+document.getElementById('totalAnalyzed').textContent+'\nThreats: '+document.getElementById('threatsDetected').textContent+'\nAccuracy: '+document.getElementById('accuracy').textContent; navigator.clipboard.writeText(s).then(()=>{alert('Copied!');});}
+        async function updateStatistics() { try { const r = await fetch('/api/model-info'); const d = await r.json(); document.getElementById('totalAnalyzed').textContent = d.total_samples_analyzed; document.getElementById('threatsDetected').textContent = d.threats_detected; document.getElementById('accuracy').textContent = d.accuracy + '%'; } catch(e) {} }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            updateStatistics();
+            updateExportInfo();
+        });
+    </script>
+</body>
+</html>

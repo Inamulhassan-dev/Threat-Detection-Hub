@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: terrorism-detection-web
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/
+    depends_on:
+      - mongo
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+    networks:
+      - terror-network
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6.0-alpine
+    container_name: terrorism-detection-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=terrorism_detection
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - terror-network
+    restart: unless-stopped
+
+  monitor:
+    build: .
+    container_name: terrorism-detection-monitor
+    command: python src/monitor.py
+    depends_on:
+      - mongo
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+    networks:
+      - terror-network
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/
+
+volumes:
+  mongodb_data:
+
+networks:
+  terror-network:
+    driver: bridge
