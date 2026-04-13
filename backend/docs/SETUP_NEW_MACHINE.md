@@ -1,590 +1,180 @@
-# 🖥️ SETUP ON NEW MACHINE - COMPLETE GUIDE
+﻿# Threat Detection Hub - Full Start Guide (USB + New Laptop)
 
-**Version:** 2.0  
-**Date:** April 12, 2026  
-**Purpose:** Step-by-step guide to clone and setup Threat Detection Hub on any new laptop
+Last updated: 2026-04-14
+Audience: Anyone running this project for the first time
 
----
+## 1. What this guide does
 
-## 🎯 BEFORE YOU START
+This guide explains exactly how to:
+- copy the project using a USB drive
+- set it up on a new Windows laptop
+- start it
+- log in and use it
+- stop it safely
+- fix common setup problems
 
-### System Requirements
-- **OS:** Windows 10+, Ubuntu 20.04+, macOS 10.14+
-- **Python:** 3.9, 3.10, or 3.11
-- **RAM:** 2GB minimum (4GB recommended)
-- **Disk Space:** 1GB free
-- **Network:** Internet connection for first setup
+## 2. Minimum requirements
 
-### What You'll Need
-- Git installed (for cloning)
-- Terminal/Command Prompt access
-- Text editor or IDE (VSCode recommended)
-- ~10-15 minutes of time
+- Windows 10 or Windows 11
+- Internet connection for first setup
+- At least 3 GB free disk space
+- Administrator permission if Windows asks during Python install
 
----
+Notes:
+- Python does not need to be pre-installed.
+- setup.bat can install Python 3.11 automatically if missing.
 
-## 📥 STEP 1: CLONE THE PROJECT
+## 3. Files you must have
 
-### Windows (Command Prompt or PowerShell):
-```batch
-# Navigate to where you want the project
-cd Desktop
+Inside the project folder, confirm these files exist:
+- setup.bat
+- start.bat
+- stop.bat
+- requirements.txt
+- backend/app.py
 
-# Clone the repository
-git clone https://github.com/your-username/threat-detection-hub.git
+If any are missing, use a fresh project copy.
 
-# Enter the folder
-cd threat-detection-hub
+## 4. Share using USB
+
+On the source laptop:
+1. Close running app windows.
+2. Copy the full project folder Threat-Detection-Hub to USB.
+
+On the target laptop:
+1. Paste Threat-Detection-Hub from USB to a local folder (Desktop recommended).
+2. Open the pasted folder.
+
+Important:
+- Do not run directly from USB for first setup.
+- Always run from local disk for better speed and fewer permission issues.
+
+## 5. First-time setup on new laptop
+
+1. Double-click setup.bat.
+2. Wait until setup completes all steps.
+3. If asked Start the application now? (Y/N), choose Y to launch immediately or N to start later.
+
+What setup.bat does:
+- checks for Python 3.11+
+- downloads/install Python 3.11 if needed
+- creates .venv virtual environment
+- installs dependencies from requirements.txt
+- downloads NLP data
+- creates required folders
+- trains ML model files in backend/models
+- initializes database/admin user
+
+First run time can be several minutes depending on internet speed.
+
+## 6. Start application
+
+Method A (recommended):
+1. Double-click start.bat
+
+Method B (terminal):
+1. Open PowerShell in project root
+2. Run:
+
+```powershell
+.\start.bat
 ```
 
-### Linux/Mac (Terminal):
-```bash
-# Navigate to where you want the project
-cd ~/Desktop
+When started, open:
+- http://localhost:5000
 
-# Clone the repository
-git clone https://github.com/your-username/threat-detection-hub.git
+Default login:
+- Username: admin
+- Password: admin123
 
-# Enter the folder
-cd threat-detection-hub
+## 7. Stop application
+
+Use one of these:
+- Press Ctrl+C in the terminal running the app
+- Double-click stop.bat
+
+stop.bat attempts to free port 5000 and stop related Python processes.
+
+## 8. Quick smoke test (2 minutes)
+
+After login:
+1. Open Dashboard tab
+2. Analyze a short text sample
+3. Confirm you get prediction + confidence output
+4. Open History and confirm saved record exists
+
+If these work, installation is successful.
+
+## 9. Common problems and fixes
+
+### Problem: setup.bat closes quickly
+Fix:
+- Right-click setup.bat and Run as administrator.
+- Run from a local folder path without special restrictions.
+
+### Problem: dependency installation fails
+Fix:
+1. Check internet connection.
+2. Run setup.bat again.
+3. If corporate network blocks downloads, try home network or VPN.
+
+### Problem: app does not open on localhost:5000
+Fix:
+1. Run stop.bat.
+2. Run start.bat again.
+3. Check firewall prompt and allow Python when asked.
+
+### Problem: wrong username/password
+Fix:
+- Use exact default credentials:
+  - admin
+  - admin123
+
+### Problem: very slow first startup
+Fix:
+- First run includes model and NLP setup.
+- Wait until setup fully finishes; next runs are much faster.
+
+## 10. For classroom or multiple laptops
+
+Repeat this order on each laptop:
+1. Copy folder locally from USB
+2. Run setup.bat once
+3. Run start.bat each time needed
+
+Tip:
+- Do first setup while internet is stable.
+- Keep one USB copy as backup in case a laptop setup is interrupted.
+
+## 11. Optional: start manually without batch files
+
+From project root:
+
+```powershell
+.\.venv\Scripts\activate
+python -m flask --app backend.app run --host=0.0.0.0 --port=5000
 ```
 
----
+If that fails, run:
 
-## ⚙️ STEP 2: VERIFY PYTHON INSTALLATION
-
-### Check if Python is installed:
-
-**Windows:**
-```batch
-python --version
-```
-
-**Linux/Mac:**
-```bash
-python3 --version
-```
-
-### If Python is NOT installed:
-
-**Windows:**
-1. Go to https://www.python.org/downloads/
-2. Download Python 3.11 (latest stable)
-3. **IMPORTANT:** Check "Add Python to PATH" during installation
-4. Click "Install Now"
-5. Close installer and restart terminal
-6. Verify: `python --version`
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt update
-sudo apt install python3 python3-pip python3-venv
-python3 --version
-```
-
-**Mac:**
-```bash
-# Using Homebrew (install from https://brew.sh if needed)
-brew install python3
-python3 --version
-```
-
----
-
-## 🚀 STEP 3: RUN AUTOMATED SETUP
-
-This is the **easiest way** - just one command!
-
-### Windows:
-```batch
-setup.bat
-```
-
-**What it does automatically:**
-- ✓ Checks Python version
-- ✓ Creates virtual environment (.venv)
-- ✓ Installs all 34 dependencies
-- ✓ Creates database with admin user
-- ✓ Sets up folder structure
-- ✓ Initializes logging system
-
-**Expected output:**
-```
-✓ Python 3.11.0 found
-✓ Virtual environment created
-✓ Pip upgraded
-✓ Dependencies installed
-✓ Databases initialized
-✓ Project ready!
-```
-
-### Linux/Mac:
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
----
-
-## ⚠️ IF SETUP.BAT/SETUP.SH FAILS
-
-### Manual Setup for Windows:
-
-```batch
-# Step 1: Create virtual environment
-python -m venv .venv
-
-# Step 2: Activate virtual environment
-.venv\Scripts\activate.bat
-
-# Step 3: Upgrade pip
-python -m pip install --upgrade pip
-
-# Step 4: Install dependencies
-pip install -r requirements.txt
-
-# Step 5: Create necessary folders
-mkdir backend\logs
-mkdir backend\models
-mkdir backend\flask_session
-
-# Step 6: Initialize databases (if missing)
-python backend/src/database.py
-```
-
-### Manual Setup for Linux/Mac:
-
-```bash
-# Step 1: Create virtual environment
-python3 -m venv .venv
-
-# Step 2: Activate virtual environment
-source .venv/bin/activate
-
-# Step 3: Upgrade pip
-python -m pip install --upgrade pip
-
-# Step 4: Install dependencies
-pip install -r requirements.txt
-
-# Step 5: Create necessary folders
-mkdir -p backend/logs backend/models backend/flask_session
-
-# Step 6: Initialize databases (if missing)
-python backend/src/database.py
-```
-
----
-
-## 🧠 STEP 4: INITIALIZE ML MODEL
-
-The ML model needs to be trained once.
-
-### Option A: Train locally (recommended)
-```bash
-# Activate virtual environment first
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
-
-# Navigate to backend
+```powershell
 cd backend
-
-# Train the model
-python -m src.train_pipeline
+python app.py
 ```
 
-**What happens:**
-- Takes ~2-3 minutes
-- Creates: `models/best_terrorism_detector.pkl`
-- Creates: `models/tfidf_vectorizer.pkl`
-- Ready for analysis!
+## 12. Security notes
 
-### Option B: Download pre-trained model
-If training takes too long, ask the project maintainer for pre-trained models:
-1. Download `.pkl` files
-2. Place in: `backend/models/`
-3. Skip to Step 5
+- Change default admin password after first login if this is not a demo machine.
+- Do not expose this development server directly to the public internet.
+- Use a proper production server if deploying beyond local/testing use.
 
----
+## 13. Support checklist before asking for help
 
-## 📊 STEP 5: VERIFY DATABASE
+Share these details:
+- Windows version
+- exact step where setup fails
+- screenshot or copy of error text
+- whether setup.bat finished all 9 steps
+- whether start.bat shows Running on http://127.0.0.1:5000
 
-Check if admin user is created:
-
-```bash
-# View users database
-cat backend/data/users.json  # Linux/Mac
-type backend\data\users.json  # Windows
-```
-
-**Expected output:**
-```json
-{
-  "users": [
-    {
-      "username": "admin",
-      "email": "admin@threatdetection.io",
-      "role": "Admin",
-      ...
-    }
-  ]
-}
-```
-
-**If file doesn't exist or is empty:**
-```bash
-# Run setup again
-setup.bat  # Windows
-./setup.sh  # Linux/Mac
-```
-
----
-
-## ✅ STEP 6: START THE APPLICATION
-
-### Windows - Easy way (Double-click):
-```
-Double-click: start.bat
-```
-
-### Windows - Command Prompt:
-```batch
-start.bat
-```
-
-### Linux/Mac:
-```bash
-# Activate virtual environment first
-source .venv/bin/activate
-
-# Set Flask app
-export FLASK_APP=backend/app.py
-
-# Start Flask
-python -m flask run --host=0.0.0.0 --port=5000
-```
-
-**You should see:**
-```
- * Serving Flask app 'backend.app'
- * Running on http://0.0.0.0:5000
-Press CTRL+C to quit
-```
-
----
-
-## 🌐 STEP 7: ACCESS THE APPLICATION
-
-**Open your browser and go to:**
-```
-http://localhost:5000
-```
-
-**Login with:**
-- Username: `admin`
-- Password: `admin123`
-
-**You should see:**
-- ✓ Dashboard with 7 tabs
-- ✓ Statistics cards showing 0 analyzed
-- ✓ Text input area
-- ✓ Dark mode interface
-
----
-
-## 🧪 STEP 8: TEST THE APPLICATION
-
-### Test 1: Single Text Analysis
-1. Go to **DASHBOARD** tab
-2. Paste sample text in text area
-3. Click **ANALYZE NOW**
-4. Should see prediction result with confidence score
-
-### Test 2: Batch Processing
-1. Go to **BATCH PROCESSING** tab
-2. Enter multiple texts (one per line)
-3. Click **PROCESS BATCH**
-4. Should see results for all texts
-
-### Test 3: View History
-1. Go to **HISTORY** tab
-2. Click **REFRESH RECORDS**
-3. Should see your previous analyses
-
----
-
-## ⚠️ COMMON PROBLEMS & SOLUTIONS
-
-### ❌ "python: command not found"
-**Solution:**
-- Install Python from python.org
-- Mac: use `python3` instead of `python`
-- Windows: Add Python to PATH during installation
-
-### ❌ "Port 5000 already in use"
-**Solution:**
-
-Windows:
-```batch
-netstat -ano | findstr :5000
-taskkill /PID <PID> /F
-start.bat
-```
-
-Linux/Mac:
-```bash
-lsof -i :5000
-kill -9 <PID>
-source .venv/bin/activate
-flask run
-```
-
-### ❌ "ModuleNotFoundError: No module named 'flask'"
-**Solution:**
-```bash
-# Make sure virtual environment is activated
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
-
-# Reinstall dependencies
-pip install -r requirements.txt
-```
-
-### ❌ "Classifier not initialized"
-**Solution:**
-```bash
-# Train the model
-cd backend
-python -m src.train_pipeline
-cd ..
-# Restart Flask
-start.bat  # Windows
-```
-
-### ❌ "Login fails with admin/admin123"
-**Solution:**
-```bash
-# Delete database to reset
-rm backend/data/users.json  # Linux/Mac
-del backend\data\users.json  # Windows
-
-# Run setup again
-setup.bat  # Windows
-./setup.sh  # Linux/Mac
-```
-
-### ❌ "Cannot find module 'backend.app'"
-**Solution:**
-- Ensure you're in the project root directory
-- Check `backend/app.py` exists
-- Verify FLASK_APP environment variable is set correctly
-
-### ❌ "Templates not found" (404 error)
-**Solution:**
-```bash
-# Check templates exist
-ls frontend/templates/  # Linux/Mac
-dir frontend\templates  # Windows
-
-# Ensure app.py has correct paths
-# Should contain:
-# template_folder='../frontend/templates'
-# static_folder='../frontend/static'
-```
-
-### ❌ "Permission denied" on Linux/Mac
-**Solution:**
-```bash
-chmod +x setup.sh
-chmod +x start.sh
-chmod 755 backend/logs
-chmod 755 backend/flask_session
-```
-
-### ❌ "Large file size / slow clone"
-**Solution:**
-- ML models are large (100MB+)
-- First clone might take time
-- Use Git LFS if available: `git lfs install`
-
----
-
-## 🔧 OPTIONAL: ADVANCED CONFIGURATION
-
-### Change Port Number
-
-**Windows (start.bat):**
-```batch
-python -m flask run --host=0.0.0.0 --port=5001
-```
-
-**Linux/Mac:**
-```bash
-flask run --host=0.0.0.0 --port=5001
-```
-
-Then access: `http://localhost:5001`
-
-### Enable Debug Mode
-
-**For development only (NOT for production!):**
-
-Windows:
-```batch
-set FLASK_DEBUG=1
-set FLASK_ENV=development
-start.bat
-```
-
-Linux/Mac:
-```bash
-export FLASK_DEBUG=1
-export FLASK_ENV=development
-source .venv/bin/activate
-flask run
-```
-
-### Create New User
-
-1. Go to application
-2. Click **Register**
-3. Create account with email
-4. Login with new credentials
-
-Or programmatically:
-```python
-from backend.src.database import DatabaseManager
-db = DatabaseManager('json')
-db.create_user('newuser', 'email@example.com', 'password123', 'Analyst')
-```
-
----
-
-## 📚 PROJECT STRUCTURE REMINDER
-
-```
-threat-detection-hub/
-├── backend/                    ← All server code
-│   ├── app.py                 ← Main Flask app
-│   ├── src/                   ← Core modules
-│   ├── data/                  ← Databases (JSON)
-│   ├── models/                ← ML models
-│   ├── logs/                  ← Application logs
-│   └── flask_session/         ← Session storage
-│
-├── frontend/                   ← All client code
-│   ├── templates/             ← HTML pages
-│   └── static/                ← CSS, JS, images
-│
-├── setup.bat                  ← Windows setup
-├── start.bat                  ← Windows start
-├── setup.sh                   ← Linux/Mac setup
-├── requirements.txt           ← Python dependencies
-└── README.md                  ← Project info
-```
-
----
-
-## ✅ VERIFICATION CHECKLIST
-
-After setup, verify everything works:
-
-- [ ] Python 3.9+ installed
-- [ ] Virtual environment created (.venv folder exists)
-- [ ] Dependencies installed (no errors on `pip list`)
-- [ ] Backend folder structure intact
-- [ ] Frontend folder structure intact
-- [ ] `backend/models/*.pkl` files exist
-- [ ] `backend/data/users.json` exists
-- [ ] `backend/logs/` folder is writable
-- [ ] Flask starts without errors
-- [ ] Dashboard loads at http://localhost:5000
-- [ ] Can login with admin/admin123
-- [ ] Can analyze text and get results
-- [ ] History tab shows previous analyses
-
----
-
-## 🆘 IF PROBLEMS PERSIST
-
-1. **Check the logs:**
-```bash
-tail -f backend/logs/app.log  # Linux/Mac
-type backend\logs\app.log     # Windows
-```
-
-2. **Verify Python path:**
-```bash
-which python  # Linux/Mac
-where python  # Windows
-```
-
-3. **Check virtual environment is activated:**
-```bash
-# You should see (.venv) before your prompt
-# If not, run:
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
-```
-
-4. **Review DEPLOYMENT_GUIDE.md:**
-- More detailed troubleshooting
-- Platform-specific issues
-- Advanced configuration
-
-5. **Check PROJECT_STRUCTURE.md:**
-- Understand folder organization
-- Verify all files are present
-
----
-
-## 📞 QUICK REFERENCE
-
-### Essential Commands
-
-**Windows:**
-```batch
-setup.bat              # One-time setup
-start.bat             # Start application
-stop.bat              # Stop application
-```
-
-**Linux/Mac:**
-```bash
-chmod +x setup.sh
-./setup.sh            # One-time setup
-source .venv/bin/activate  # Activate environment
-flask run             # Start application
-Ctrl+C                # Stop application
-```
-
----
-
-## ⏱️ ESTIMATED TIME
-
-- **Fresh laptop with Python:** 5-10 minutes
-- **Fresh laptop without Python:** 15-20 minutes (includes Python install)
-- **With model training:** Add 3-5 minutes
-
----
-
-## 🎉 YOU'RE DONE!
-
-Once you see the dashboard, you're ready to use the Threat Detection Hub!
-
-**Next steps:**
-- Explore the 7 tabs (Dashboard, Batch, Samples, History, Search, Analytics, Export)
-- Test with sample texts
-- Check analysis history
-- Export results as CSV
-- Customize user accounts
-
----
-
-**Questions?** See the other documentation files:
-- `QUICK_START.md` - Fast overview
-- `DEPLOYMENT_GUIDE.md` - Full operations manual
-- `PROJECT_STRUCTURE.md` - File organization
-- `CODE_ANALYSIS_REPORT.md` - Technical details
-
-**Happy threat detecting!** 🛡️
+This helps fix issues much faster.
