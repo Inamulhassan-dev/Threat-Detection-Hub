@@ -74,16 +74,16 @@ logger.info("=" * 70)
 
 try:
     classifier = ContentClassifier()
-    logger.info("✓ ContentClassifier loaded successfully")
+    logger.info("[OK] ContentClassifier loaded successfully")
 except Exception as e:
-    logger.error(f"✗ Error loading ContentClassifier: {str(e)}")
+    logger.error(f"[ERROR] Error loading ContentClassifier: {str(e)}")
     classifier = None
 
 alert_system = AlertSystem()
-logger.info("✓ AlertSystem initialized")
+logger.info("[OK] AlertSystem initialized")
 
 db = DatabaseManager('json')
-logger.info("✓ DatabaseManager initialized")
+logger.info("[OK] DatabaseManager initialized")
 
 # ================================================================================
 # STATISTICS TRACKER
@@ -97,7 +97,7 @@ stats = {
     'system_status': 'operational'
 }
 
-logger.info("✓ Statistics tracker initialized")
+logger.info("[OK] Statistics tracker initialized")
 
 # ================================================================================
 # AUTHENTICATION DECORATORS
@@ -163,13 +163,13 @@ def login():
             session['role'] = result['user']['role']
             session.permanent = True
             
-            logger.info(f"✓ User '{username}' logged in successfully")
+            logger.info(f"[OK] User '{username}' logged in successfully")
             
             if request.is_json:
                 return jsonify(result)
             return redirect(url_for('dashboard'))
         else:
-            logger.warning(f"✗ Failed login attempt for user '{username}'")
+            logger.warning(f"[WARN] Failed login attempt for user '{username}'")
             if request.is_json:
                 return jsonify(result), 401
             return render_template('login.html', error=result['message'])
@@ -209,12 +209,12 @@ def register():
         result = db.create_user(username, email, password, 'Viewer')
         
         if result['success']:
-            logger.info(f"✓ New user registered: '{username}'")
+            logger.info(f"[OK] New user registered: '{username}'")
             if request.is_json:
                 return jsonify({'success': True, 'message': 'Registration successful. Please login.'}), 201
             return render_template('login.html', success='Registration successful. Please login.')
         else:
-            logger.warning(f"✗ Registration failed for '{username}': {result['message']}")
+            logger.warning(f"[WARN] Registration failed for '{username}': {result['message']}")
             if request.is_json:
                 return jsonify(result), 400
             return render_template('login.html', error=result['message'], tab='register')
@@ -227,7 +227,7 @@ def logout():
     """Logout user and clear session"""
     username = session.get('username', 'Unknown')
     session.clear()
-    logger.info(f"✓ User '{username}' logged out")
+    logger.info(f"[OK] User '{username}' logged out")
     return redirect(url_for('login'))
 
 # ================================================================================
@@ -267,7 +267,7 @@ def change_password():
     result = db.update_password(session['username'], old_password, new_password)
     
     if result['success']:
-        logger.info(f"✓ User '{session['username']}' changed password")
+        logger.info(f"[OK] User '{session['username']}' changed password")
         return jsonify(result)
     return jsonify(result), 400
 
@@ -681,9 +681,9 @@ if __name__ == '__main__':
     print("THREAT DETECTION HUB - BACKEND APPLICATION")
     print("=" * 70)
     print(f"Status: Starting...")
-    print(f"Classifier Loaded: {'✓ Yes' if classifier is not None else '✗ No'}")
-    print(f"Database Connected: ✓ Yes")
-    print(f"Authentication: ✓ Enabled")
+    print(f"Classifier Loaded: {'Yes' if classifier is not None else 'No'}")
+    print("Database Connected: Yes")
+    print("Authentication: Enabled")
     print(f"Flask Environment: Development")
     print(f"Debug Mode: Disabled")
     print("\nTo train the model, run: python -m src.train_pipeline")

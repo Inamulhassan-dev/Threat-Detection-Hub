@@ -21,25 +21,25 @@ echo.
 
 set "PROJECT_DIR=%~dp0"
 cd /d "!PROJECT_DIR!"
+set "PYTHON_CMD=python"
 
 REM ============================================================
 REM STEP 1 - CHECK / INSTALL PYTHON
 REM ============================================================
-echo [STEP 1/9]  Checking Python...
+echo [STEP 1/9]  Checking Python 3.11+...
 echo.
 
-python --version >nul 2>&1
+python -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)" >nul 2>&1
 if errorlevel 1 (
-    echo   Python not found. Downloading Python 3.11.9 installer...
+    py -3.11 --version >nul 2>&1
+    if not errorlevel 1 (
+        set "PYTHON_CMD=py -3.11"
+    ) else (
+    echo   Python 3.11+ not found. Downloading Python 3.11.9 installer...
     echo   Please wait - this may take 1-2 minutes...
     echo.
 
-    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; ^
-         $url = 'https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe'; ^
-         $out = '$env:TEMP\python-installer.exe'; ^
-         (New-Object System.Net.WebClient).DownloadFile($url, $out); ^
-         Write-Host 'Download complete.'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $url='https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe'; $out=Join-Path $env:TEMP 'python-installer.exe'; Invoke-WebRequest -Uri $url -OutFile $out; Write-Host 'Download complete.'"
 
     if not exist "%TEMP%\python-installer.exe" (
         echo.
@@ -60,18 +60,24 @@ if errorlevel 1 (
     for /f "usebackq tokens=2*" %%A in (`reg query "HKCU\Environment" /v PATH 2^>nul`) do set "USERPATH=%%B"
     set "PATH=!USERPATH!;%PATH%"
 
-    python --version >nul 2>&1
+    py -3.11 --version >nul 2>&1
+    if not errorlevel 1 (
+        set "PYTHON_CMD=py -3.11"
+    ) else (
+    python -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)" >nul 2>&1
     if errorlevel 1 (
         echo.
-        echo   ERROR: Python installation finished but python is still not found.
+        echo   ERROR: Python installation finished but Python 3.11+ is still not available.
         echo   Please CLOSE this window, reopen it, and run setup.bat again.
         color 0C
         pause
         exit /b 1
     )
+    )
+    )
 )
 
-for /f "tokens=2" %%V in ('python --version 2^>^&1') do set "PY_VER=%%V"
+for /f "tokens=2" %%V in ('!PYTHON_CMD! --version 2^>^&1') do set "PY_VER=%%V"
 echo   Python !PY_VER! is ready.
 echo.
 
@@ -112,7 +118,7 @@ if exist ".venv" (
     timeout /t 2 /nobreak >nul
 )
 
-python -m venv .venv
+!PYTHON_CMD! -m venv .venv
 if errorlevel 1 (
     echo   ERROR: Could not create virtual environment.
     color 0C
