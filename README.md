@@ -65,7 +65,8 @@ Password : admin123
 
 **That's it. Nothing else. No manual steps.**
 
-Need a full step-by-step guide (including USB transfer and troubleshooting)? See `backend/docs/SETUP_NEW_MACHINE.md`.
+Need a full step-by-step guide (including USB transfer and troubleshooting)? See `SETUP_NEW_MACHINE.md`.
+Quick file for first-time users: `START_HERE.md`.
 
 ---
 
