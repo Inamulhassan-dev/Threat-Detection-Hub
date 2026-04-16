@@ -14,6 +14,7 @@
 ![NLTK](https://img.shields.io/badge/NLTK-3.9-green?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
+[![CI](https://github.com/Inamulhassan-dev/Threat-Detection-Hub/actions/workflows/ci.yml/badge.svg)](https://github.com/Inamulhassan-dev/Threat-Detection-Hub/actions/workflows/ci.yml)
 
 <br/>
 
@@ -33,24 +34,27 @@ It features a professional dark-mode web dashboard, role-based user authenticati
 
 ## ⚡ Quick Start — Brand New Machine
 
-> No Python? No problem. Just double-click and everything installs itself.
-
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/INAMULHASSAN/threat-detection-hub.git
-cd threat-detection-hub
+git clone https://github.com/Inamulhassan-dev/Threat-Detection-Hub.git
+cd Threat-Detection-Hub
 ```
 
 ### 2️⃣ Run Setup (One Time Only)
-```
-Double-click  ➜  setup.bat
-```
+
+| OS | Command |
+|----|---------|
+| **Windows** | Double-click `setup.bat` |
+| **Linux / macOS** | `bash setup.sh` |
+
 Sit back. Everything downloads and installs automatically — takes about 5 minutes.
 
 ### 3️⃣ Start the Application
-```
-Double-click  ➜  start.bat
-```
+
+| OS | Command |
+|----|---------|
+| **Windows** | Double-click `start.bat` |
+| **Linux / macOS** | `bash start.sh` |
 
 ### 4️⃣ Open Your Browser
 ```
@@ -70,7 +74,29 @@ Quick file for first-time users: `START_HERE.md`.
 
 ---
 
-## 🤖 What `setup.bat` Does Automatically
+## 🔐 Required Privileges & OS Notes
+
+| Requirement | Detail |
+|------------|--------|
+| **Permissions** | No root/administrator required. The app only needs **read/write access to its own project folder** (`backend/logs/`, `backend/data/`, `backend/flask_session/`). |
+| **Port** | Binds to **port 5000** on `localhost`. Ensure no other service is using this port. |
+| **Python** | Python **3.9 or newer** required (3.11 recommended). |
+| **Network** | Outbound HTTP needed only if you enable web scraping or email alerts. |
+
+### Linux / macOS notes
+- If you see `[PERMISSION ERROR]` on startup, run: `chmod -R u+w backend/logs backend/data backend/flask_session`
+- If port 5000 is taken: `lsof -ti tcp:5000 | xargs kill`
+- If Python 3 is not installed:
+  - **Ubuntu/Debian**: `sudo apt install python3 python3-pip python3-venv`
+  - **macOS**: `brew install python`
+
+### Windows notes
+- If `setup.bat` is blocked by Windows Defender, right-click → *Properties* → check *Unblock*.
+- Run from an unprivileged Command Prompt or PowerShell — no UAC elevation needed.
+
+---
+
+## 🤖 What `setup.bat` / `setup.sh` Does Automatically
 
 | Step | Action |
 |------|--------|

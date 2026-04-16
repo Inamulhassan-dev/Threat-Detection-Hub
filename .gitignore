@@ -45,6 +45,7 @@ backend/data/data/alerts.json
 /logs/
 
 # Environment secrets
+backend/config/.env
 backend/config/.env.local
 backend/config/.env.production
 
