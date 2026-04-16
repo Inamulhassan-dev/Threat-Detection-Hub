@@ -690,9 +690,42 @@ if __name__ == '__main__':
     print("To access the application, navigate to: http://localhost:5000")
     print(f"Login with: admin / admin123")
     print("=" * 70 + "\n")
-    
+
+    # ── Pre-flight permission checks ─────────────────────────────────────
+    _required_dirs = [
+        os.path.join(BASE_DIR, 'logs'),
+        os.path.join(BASE_DIR, 'data'),
+        os.path.join(BASE_DIR, 'flask_session'),
+    ]
+    _permission_ok = True
+    for _d in _required_dirs:
+        os.makedirs(_d, exist_ok=True)
+        _probe = os.path.join(_d, '.write_probe')
+        try:
+            with open(_probe, 'w') as _f:
+                _f.write('')
+            os.remove(_probe)
+        except OSError as _exc:
+            print(f"\n[PERMISSION ERROR] Cannot write to {_d}")
+            print(f"  Detail : {_exc}")
+            print(f"  Fix    : chmod -R u+w {_d}")
+            print("  The application cannot start without write access to this folder.")
+            _permission_ok = False
+    if not _permission_ok:
+        raise SystemExit(1)
+
     try:
         app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    except OSError as e:
+        if 'Address already in use' in str(e) or 'Errno 98' in str(e) or 'Errno 48' in str(e):
+            print("\n[PORT ERROR] Port 5000 is already in use.")
+            print("  Stop the other process first, or change the port.")
+            print("  Linux/macOS : lsof -ti tcp:5000 | xargs kill")
+            print("  Windows     : netstat -ano | findstr :5000")
+        else:
+            print(f"\n[NETWORK ERROR] Could not start the server: {e}")
+        logger.error(f"Fatal error starting application: {str(e)}")
+        raise SystemExit(1)
     except Exception as e:
         logger.error(f"Fatal error starting application: {str(e)}")
         print(f"ERROR: {str(e)}")
